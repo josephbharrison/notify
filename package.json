@@ -1,0 +1,37 @@
+{
+  "name": "notify-sms",
+  "version": "1.0.0",
+  "description": "CLI tool to send SMS messages via Twilio",
+  "module": "src/index.ts",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "notify": "./notify"
+  },
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "dev": "bun run --watch src/index.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build": "bun build --compile --minify ./src/index.ts --outfile notify",
+    "build:darwin-arm64": "bun build --compile --minify --target=bun-darwin-arm64 ./src/index.ts --outfile notify-darwin-arm64",
+    "build:darwin-x64": "bun build --compile --minify --target=bun-darwin-x64 ./src/index.ts --outfile notify-darwin-x64",
+    "build:linux-x64": "bun build --compile --minify --target=bun-linux-x64 ./src/index.ts --outfile notify-linux-x64",
+    "build:linux-arm64": "bun build --compile --minify --target=bun-linux-arm64 ./src/index.ts --outfile notify-linux-arm64"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^25.0.3",
+    "@types/nodemailer": "^7.0.4",
+    "vitest": "^4.0.16"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "commander": "^14.0.2",
+    "libphonenumber-js": "^1.12.33",
+    "nodemailer": "^7.0.12",
+    "twilio": "^5.11.1"
+  }
+}
