@@ -42,3 +42,8 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.swp
+
+# Development tooling (local only)
+.opencode/
+.specify/
+specs/
