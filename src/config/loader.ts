@@ -1,10 +1,97 @@
 // src/config/loader.ts
 // Environment variable and configuration loading
 
+import { existsSync, readFileSync, mkdirSync, copyFileSync } from 'fs';
+import { homedir } from 'os';
+import { join, dirname } from 'path';
 import type { Credentials, SendError } from '../sms/types.ts';
 import type { EmailCredentials } from '../sms/providers/email-gateway.ts';
 import type { NtfyCredentials } from '../sms/providers/ntfy.ts';
 import type { PushoverCredentials } from '../sms/providers/pushover.ts';
+
+/**
+ * Get the config directory path: ~/.config/notify
+ */
+export function getConfigDir(): string {
+  return join(homedir(), '.config', 'notify');
+}
+
+/**
+ * Get the config file path: ~/.config/notify/.env
+ */
+export function getConfigPath(): string {
+  return join(getConfigDir(), '.env');
+}
+
+/**
+ * Load environment variables from ~/.config/notify/.env
+ * This is called once at startup to populate process.env
+ */
+export function loadConfigFile(): void {
+  const configPath = getConfigPath();
+  
+  if (!existsSync(configPath)) {
+    return; // No config file, rely on shell environment
+  }
+  
+  try {
+    const content = readFileSync(configPath, 'utf-8');
+    const lines = content.split('\n');
+    
+    for (const line of lines) {
+      const trimmed = line.trim();
+      
+      // Skip empty lines and comments
+      if (!trimmed || trimmed.startsWith('#')) {
+        continue;
+      }
+      
+      // Parse KEY=value (handle values with = in them)
+      const eqIndex = trimmed.indexOf('=');
+      if (eqIndex === -1) continue;
+      
+      const key = trimmed.slice(0, eqIndex).trim();
+      let value = trimmed.slice(eqIndex + 1).trim();
+      
+      // Remove surrounding quotes if present
+      if ((value.startsWith('"') && value.endsWith('"')) ||
+          (value.startsWith("'") && value.endsWith("'"))) {
+        value = value.slice(1, -1);
+      }
+      
+      // Only set if not already in environment (shell env takes precedence)
+      if (!process.env[key]) {
+        process.env[key] = value;
+      }
+    }
+  } catch {
+    // Silently ignore read errors
+  }
+}
+
+/**
+ * Initialize config directory with example file if it doesn't exist.
+ * Called during build process.
+ */
+export function initConfigDir(examplePath: string): { created: boolean; path: string } {
+  const configDir = getConfigDir();
+  const configPath = getConfigPath();
+  
+  // Create directory if needed
+  if (!existsSync(configDir)) {
+    mkdirSync(configDir, { recursive: true });
+  }
+  
+  // Copy example if config doesn't exist
+  if (!existsSync(configPath)) {
+    if (existsSync(examplePath)) {
+      copyFileSync(examplePath, configPath);
+      return { created: true, path: configPath };
+    }
+  }
+  
+  return { created: false, path: configPath };
+}
 
 /**
  * Result of loading credentials - either success with credentials or failure with error.

@@ -49,15 +49,14 @@ notify --version
 
 ## Configuration
 
-Copy the example environment file:
+The CLI loads configuration from `~/.config/notify/.env`. This file is created automatically during build with example content.
 
 ```bash
-cp .env.example .env
+# Edit your config
+nano ~/.config/notify/.env
 ```
 
-Edit `.env` and configure ONE provider (see below for options).
-
-The CLI auto-detects which provider to use based on which environment variables are set.
+Configure ONE provider (see below for options). The CLI auto-detects which provider to use based on which environment variables are set.
 
 ### Option 1: Pushover (Recommended)
 
@@ -68,7 +67,7 @@ The CLI auto-detects which provider to use based on which environment variables 
 3. Copy your **User Key** from the dashboard
 4. Create an Application at [pushover.net/apps/build](https://pushover.net/apps/build)
 5. Copy the **API Token/Key**
-6. Add to `.env`:
+6. Add to `~/.config/notify/.env`:
 
 ```env
 PUSHOVER_USER=your-user-key
@@ -83,7 +82,7 @@ PUSHOVER_TOKEN=your-api-token
 
 1. Download the app: [iOS](https://apps.apple.com/app/ntfy/id1625396347) / [Android](https://play.google.com/store/apps/details?id=io.heckel.ntfy)
 2. Subscribe to a unique topic (e.g., `my-alerts-xyz123`)
-3. Add to `.env`:
+3. Add to `~/.config/notify/.env`:
 
 ```env
 NTFY_TOPIC=my-alerts-xyz123
@@ -100,7 +99,7 @@ Requires A2P 10DLC registration for US numbers. Trial accounts cannot complete r
 3. Buy a phone number (~$1.15/month)
 4. Complete A2P 10DLC registration (Sole Proprietor: ~$5.50)
 5. Wait for approval (1-7 days)
-6. Add to `.env`:
+6. Add to `~/.config/notify/.env`:
 
 ```env
 TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -115,7 +114,7 @@ TWILIO_PHONE_NUMBER=+14155551234
 Many carriers block these messages (especially AT&T). Requires knowing recipient's carrier.
 
 1. Generate a Gmail App Password at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
-2. Add to `.env`:
+2. Add to `~/.config/notify/.env`:
 
 ```env
 EMAIL_USER=your-email@gmail.com
