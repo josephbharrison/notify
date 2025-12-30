@@ -47,3 +47,4 @@ Thumbs.db
 .opencode/
 .specify/
 specs/
+# Agent context (local only)
