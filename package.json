@@ -1,5 +1,5 @@
 {
-  "name": "notify-sms",
+  "name": "notify",
   "version": "1.0.0",
   "description": "CLI tool to send SMS messages via Twilio",
   "module": "src/index.ts",

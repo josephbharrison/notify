@@ -13,8 +13,9 @@ Sending notifications to yourself should be simple. But:
 - **Twilio** requires A2P 10DLC registration ($25+ and 1-7 day approval)
 - **Email-to-SMS gateways** are blocked by most carriers
 - **ntfy.sh** doesn't have real push notifications on iOS
+- **Pushover** works reliably for $5 one-time.
 
-**Pushover** works reliably for $5 one-time. This CLI supports all four options so you can use what works for you.
+> Fortunately, this CLI supports all four options, so you can use what works for you.
 
 ## Installation
 
@@ -30,8 +31,8 @@ curl -fsSL https://bun.sh/install | bash
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/notify-sms.git
-cd notify-sms
+git clone https://github.com/josephbharrison/notify.git
+cd notify
 
 # Install dependencies
 bun install
