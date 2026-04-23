@@ -251,6 +251,11 @@ export function loadNtfyCredentials(): NtfyCredentialsResult {
 export function loadPushoverCredentials(): PushoverCredentialsResult {
   const userKey = process.env.PUSHOVER_USER;
   const apiToken = process.env.PUSHOVER_TOKEN;
+  const sound = process.env.PUSHOVER_SOUND;
+  const priority = process.env.PUSHOVER_PRIORITY;
+  const retry = process.env.PUSHOVER_RETRY;
+  const expire = process.env.PUSHOVER_EXPIRE;
+  const title = process.env.PUSHOVER_TITLE;
 
   const missing: string[] = [];
   if (!userKey) missing.push('PUSHOVER_USER');
@@ -273,6 +278,11 @@ export function loadPushoverCredentials(): PushoverCredentialsResult {
     credentials: {
       userKey: userKey!,
       apiToken: apiToken!,
+      sound,
+      priority,
+      retry,
+      expire,
+      title,
     },
   };
 }

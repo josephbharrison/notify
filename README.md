@@ -72,6 +72,8 @@ Configure ONE provider (see below for options). The CLI auto-detects which provi
 ```env
 PUSHOVER_USER=your-user-key
 PUSHOVER_TOKEN=your-api-token
+PUSHOVER_SOUND=siren
+PUSHOVER_PRIORITY=1
 ```
 
 ### Option 2: ntfy.sh (Free)
@@ -127,8 +129,11 @@ Supported carriers: `att`, `tmobile`, `verizon`, `sprint`, `uscellular`, `boost`
 ## Usage
 
 ```bash
-# Send a notification
+# Send a notification (normal)
 notify "+14155551234" "Hello world!"
+
+# Send a critical notification
+notify --level critical "+14155551234" "Tripwire detected tampering"
 
 # Use national format (assumes US)
 notify "415-555-1234" "Meeting in 5 minutes"

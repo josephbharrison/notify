@@ -47,12 +47,19 @@ program
   .argument('<message>', 'SMS message text')
   .option('-c, --country <code>', 'Default country for national numbers', 'US')
   .option('-q, --quiet', 'Suppress success output')
+  .option('--level <level>', 'Alert level: normal, high, or critical', 'normal')
+  .option('--title <title>', 'Title override (Pushover max 250 chars)')
   .addHelpText(
     'after',
     `
 Environment Variables (Pushover - $5, reliable iOS/Android push):
   PUSHOVER_USER          Your user key from https://pushover.net
   PUSHOVER_TOKEN         API token from your Pushover application
+  PUSHOVER_SOUND         Optional sound (e.g., siren, persistent)
+  PUSHOVER_PRIORITY      Optional priority (-2,-1,0,1,2)
+  PUSHOVER_RETRY         Required for priority=2 (seconds)
+  PUSHOVER_EXPIRE        Required for priority=2 (seconds)
+  PUSHOVER_TITLE         Optional title override (max 250 chars)
 
 Environment Variables (ntfy.sh - free, requires app open on iOS):
   NTFY_TOPIC             Your ntfy topic name (e.g., "my-alerts")
@@ -72,9 +79,12 @@ Examples:
   $ notify "+14155552671" "Hello world"
   $ notify --country GB "07700900123" "UK message"
   $ notify -q "+14155552671" "Silent send"
+  $ notify --level high "+14155552671" "High priority"
+  $ notify --level critical "+14155552671" "Critical alert"
+  $ notify --title "Tripwire: diff in ai-core" "+14155552671" "See /tmp/verify-tripwire-last.txt"
 `
   )
-  .action(async (phoneNumber: string, message: string, options: { country: string; quiet: boolean }) => {
+  .action(async (phoneNumber: string, message: string, options: { country: string; quiet: boolean; level: string; title?: string }) => {
     // Step 1: Validate phone number
     const phoneResult = validateAndFormatPhone(phoneNumber, options.country);
     if (!phoneResult.success) {
@@ -84,6 +94,32 @@ Examples:
     // Step 2: Detect provider and load credentials
     const provider = detectProvider();
     let client: SmsClient;
+
+    const level = (options.level || 'normal').toLowerCase();
+    if (level !== 'normal' && level !== 'high' && level !== 'critical') {
+      exitWithError({
+        code: 'INVALID_PHONE',
+        message: `Invalid level: ${options.level}. Use "normal", "high", or "critical".`,
+        retryable: false,
+        guidance: 'Run notify --help for usage examples.',
+      });
+    }
+
+    if (level === 'critical') {
+      process.env.PUSHOVER_PRIORITY = '2';
+      process.env.PUSHOVER_RETRY = process.env.PUSHOVER_RETRY || '30';
+      process.env.PUSHOVER_EXPIRE = process.env.PUSHOVER_EXPIRE || '600';
+      process.env.PUSHOVER_SOUND = process.env.PUSHOVER_SOUND || 'siren';
+    } else if (level === 'high') {
+      process.env.PUSHOVER_PRIORITY = '1';
+      process.env.PUSHOVER_SOUND = process.env.PUSHOVER_SOUND || 'siren';
+    } else {
+      process.env.PUSHOVER_PRIORITY = '0';
+    }
+
+    if (options.title) {
+      process.env.PUSHOVER_TITLE = options.title;
+    }
 
     if (provider === 'pushover') {
       const credentialsResult = loadPushoverCredentials();
